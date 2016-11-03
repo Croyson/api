@@ -222,18 +222,21 @@ class AuthController extends Controller {
     }
   }
 
+  // 获取用户IDS信息
   post("/v2/user/getIDS"){ request: PostIdsRegRequest =>
     campusService.getNjxzUserInfoByToken(request.token).map{
       rsp => response.ok.json(rsp)
     }
   }
 
+  // 获取阿里百川用户
   get("/v2/user/getIm"){ request: Request =>
     imUserService.getImgUsers(request.getParam("userId")).map{
       rsp => response.ok.json(rsp)
     }
   }
 
+  // 查询聊天记录
   get("/v2/user/getImChatLog"){ request: Request =>
     imUserService.getImgUsersChatLogs(request.getParam("userId1"),request.getParam("userId2")).map{
       rsp => response.ok.json(rsp)
