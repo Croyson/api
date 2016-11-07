@@ -1,7 +1,7 @@
 package com.wisedu.next.api.services
 
 import javax.inject.Inject
-import collection.JavaConversions._
+
 import com.google.inject.Singleton
 import com.taobao.api.DefaultTaobaoClient
 import com.taobao.api.domain.{OpenImUser, Userinfos}
@@ -15,6 +15,8 @@ import com.twitter.util.Future
 import com.wisedu.next.models.User
 import com.wisedu.next.services.BaseFunctions
 import org.joda.time.DateTime
+
+import scala.collection.JavaConversions._
 
 
 /**
@@ -152,7 +154,7 @@ class ImUserService extends Logging {
   /*
   *  查询聊天记录
   * */
-  def getImgUsersChatLogs(userId1: String,userId2:String): Future[OpenimChatlogsGetResponse] = {
+  def getImgUsersChatLogs(userId1: String, userId2: String): Future[OpenimChatlogsGetResponse] = {
     futurePool {
       val req = new OpenimChatlogsGetRequest()
       val user1 = new OpenImUser()
@@ -163,8 +165,8 @@ class ImUserService extends Logging {
       user2.setTaobaoAccount(false)
       req.setUser1(user1)
       req.setUser2(user2)
-      req.setBegin(DateTime.now().plusDays(-1).getMillis.toString().substring(0,10).toLong)
-      req.setEnd(DateTime.now().getMillis.toString().substring(0,10).toLong)
+      req.setBegin(DateTime.now().plusDays(-1).getMillis.toString().substring(0, 10).toLong)
+      req.setEnd(DateTime.now().getMillis.toString().substring(0, 10).toLong)
       req.setCount(100L)
       val resp = client.execute(req)
       resp
@@ -172,8 +174,8 @@ class ImUserService extends Logging {
   }
 
   // 服务端推送消息,群发
-  def pushMsgToUsers(from: String, to: Seq[String], content: String) = {
-    futurePool{
+  def pushMsgToUsers(from: String, to: Seq[String], content: String): Future[OpenimImmsgPushResponse] = {
+    futurePool {
       val req = new OpenimImmsgPushRequest
       val imMsg = new ImMsg
       imMsg.setFromUser(from)

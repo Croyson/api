@@ -3,14 +3,15 @@ package com.wisedu.next.api.services
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
 
-import com.taobao.api.response.{OpenimUsersUpdateResponse, OpenimUsersDeleteResponse, OpenimUsersAddResponse}
+import com.taobao.api.response.{OpenimImmsgPushResponse, OpenimUsersAddResponse, OpenimUsersDeleteResponse, OpenimUsersUpdateResponse}
 import com.twitter.finatra.annotations.Flag
 import com.twitter.util.Future
 import com.wisedu.next.api.domains._
+import com.wisedu.next.api.filters.UserContext._
 import com.wisedu.next.models.UserSnsInfo
 import com.wisedu.next.services.{BaseFunctions, CollegeBaseService, StaticBaseService, UserBaseService}
 import org.joda.time.DateTime
-import com.wisedu.next.api.filters.UserContext._
+
 /**
  * Version: 1.1
  * Author: pattywgm
@@ -36,7 +37,7 @@ class UsersService {
       userBaseService.getUserById(request.request.user.userId).flatMap {
         case Some(oldUser) =>
           //用户信息修改
-          serviceFunctions.getModifyUserInfo(request.request.user.userId,request, oldUser).flatMap {
+          serviceFunctions.getModifyUserInfo(request.request.user.userId, request, oldUser).flatMap {
             user =>
               imUserService.updImUsers(Seq(user))
               userBaseService.updUser(user).flatMap {
@@ -444,10 +445,10 @@ class UsersService {
       userSize =>
         var uploadsF = Seq[Future[OpenimUsersDeleteResponse]]()
         for (i <- 0 to userSize / 100) {
-          val uploadF = userBaseService.collUsers("", "0", "", "", 100 , i * 100 ).flatMap(
+          val uploadF = userBaseService.collUsers("", "0", "", "", 100, i * 100).flatMap(
             users => imUserService.delImUsers(users)
           )
-          uploadsF =  uploadsF :+ uploadF
+          uploadsF = uploadsF :+ uploadF
         }
         Future.collect(uploadsF)
     }
@@ -459,10 +460,10 @@ class UsersService {
       userSize =>
         var uploadsF = Seq[Future[OpenimUsersAddResponse]]()
         for (i <- 0 to userSize / 100) {
-          val uploadF = userBaseService.collUsers("", "0", "", "", 100 , i * 100 ).flatMap(
+          val uploadF = userBaseService.collUsers("", "0", "", "", 100, i * 100).flatMap(
             users => imUserService.addImUsers(users)
           )
-          uploadsF =  uploadsF :+ uploadF
+          uploadsF = uploadsF :+ uploadF
         }
         Future.collect(uploadsF)
     }
@@ -474,12 +475,28 @@ class UsersService {
       userSize =>
         var uploadsF = Seq[Future[OpenimUsersUpdateResponse]]()
         for (i <- 0 to userSize / 100) {
-          val uploadF = userBaseService.collUsers("", "0", "", "", 100 , i * 100 ).flatMap(
+          val uploadF = userBaseService.collUsers("", "0", "", "", 100, i * 100).flatMap(
             users => imUserService.updImUsers(users)
           )
-          uploadsF =  uploadsF :+ uploadF
+          uploadsF = uploadsF :+ uploadF
         }
         Future.collect(uploadsF)
     }
   }
+
+  def sendMsgToIm(from: String, content: String): Future[Seq[OpenimImmsgPushResponse]] = {
+    userBaseService.collUsersSize("", "0", "", "").flatMap {
+      userSize =>
+        var sendMsgsF = Seq[Future[OpenimImmsgPushResponse]]()
+        for (i <- 0 to userSize / 100) {
+          val sendMsgF = userBaseService.collUsers("", "0", "", "", 100, i * 100).flatMap(
+            users =>
+              imUserService.pushMsgToUsers(from, users.map(_.userId.toString), content)
+          )
+          sendMsgsF = sendMsgsF :+ sendMsgF
+        }
+        Future.collect(sendMsgsF)
+    }
+  }
+
 }
