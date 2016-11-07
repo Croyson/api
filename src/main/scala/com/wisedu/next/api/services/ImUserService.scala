@@ -1,10 +1,11 @@
 package com.wisedu.next.api.services
 
 import javax.inject.Inject
-
+import collection.JavaConversions._
 import com.google.inject.Singleton
 import com.taobao.api.DefaultTaobaoClient
 import com.taobao.api.domain.{OpenImUser, Userinfos}
+import com.taobao.api.request.OpenimImmsgPushRequest.ImMsg
 import com.taobao.api.request._
 import com.taobao.api.response._
 import com.twitter.finatra.json.FinatraObjectMapper
@@ -32,8 +33,8 @@ import org.joda.time.DateTime
 class ImUserService extends Logging {
   @Inject var objectMapper: FinatraObjectMapper = _
   private val futurePool = FuturePools.unboundedPool("CallbackConverter")
-  val appKey = "23514495"
-  val appSecret = "2682707f39df7c5cf2200a5b66b2fd42"
+  val appKey = "23461455"
+  val appSecret = "626b6ab53995fcea2c7e89c0e566feeb"
   val imUrl = "http://gw.api.taobao.com/router/rest"
   val client = new DefaultTaobaoClient(imUrl, appKey, appSecret)
 
@@ -170,6 +171,19 @@ class ImUserService extends Logging {
     }
   }
 
-
+  // 服务端推送消息,群发
+  def pushMsgToUsers(from: String, to: Seq[String], content: String) = {
+    futurePool{
+      val req = new OpenimImmsgPushRequest
+      val imMsg = new ImMsg
+      imMsg.setFromUser(from)
+      imMsg.setToUsers(seqAsJavaList(to))
+      imMsg.setContext(content)
+      imMsg.setMsgType(0L)
+      req.setImmsg(imMsg)
+      val resp = client.execute(req)
+      resp
+    }
+  }
 }
 

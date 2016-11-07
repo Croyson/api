@@ -76,3 +76,5 @@ case class PostUserImgRequest(@RequestInject request: Request, @RouteParam user_
 case class PostModifyPasswordReq(phone_no:String,auth_code:String,new_password:String)
 
 case class PostIdsRegRequest(@RequestInject request: Request,token: String)
+
+case class PushMsgRequest(@RequestInject request: Request, from: String, to: Seq[String], content:String)

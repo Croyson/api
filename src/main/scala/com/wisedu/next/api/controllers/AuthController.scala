@@ -243,5 +243,12 @@ class AuthController extends Controller {
     }
   }
 
+  // 群发消息给用户
+  post("/v2/user/pushMsg"){ request: PushMsgRequest =>
+    imUserService.pushMsgToUsers(request.from, request.to, request.content).map{
+      rsp => response.ok.json(rsp)
+    }
+  }
+
 }
 
