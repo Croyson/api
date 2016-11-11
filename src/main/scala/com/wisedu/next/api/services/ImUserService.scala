@@ -26,17 +26,19 @@ import scala.collection.JavaConversions._
  *         contact 14116004@wisedu.com
  *         date 16/9/23
  *         {
+ *
+ *         正式:
   "imUrl":"http://gw.api.taobao.com/router/rest",
-  "appKey":"23461455",
-  "appSecret":"626b6ab53995fcea2c7e89c0e566feeb"
+  "appKey":"23514495",
+  "appSecret":"2682707f39df7c5cf2200a5b66b2fd42"
 }
  */
 @Singleton
 class ImUserService extends Logging {
   @Inject var objectMapper: FinatraObjectMapper = _
   private val futurePool = FuturePools.unboundedPool("CallbackConverter")
-  val appKey = "23461455"
-  val appSecret = "626b6ab53995fcea2c7e89c0e566feeb"
+  val appKey = "23485801"
+  val appSecret = "e3dce60c815dde754780968b8e0d7d59"
   val imUrl = "http://gw.api.taobao.com/router/rest"
   val client = new DefaultTaobaoClient(imUrl, appKey, appSecret)
 

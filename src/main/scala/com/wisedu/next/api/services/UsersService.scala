@@ -454,6 +454,15 @@ class UsersService {
     }
   }
 
+  def addUsersToIm(userIds: String): Future[OpenimUsersAddResponse] = {
+    userBaseService.collUsersByIds(userIds).flatMap {
+      users => imUserService.addImUsers(users)
+    }.rescue {
+      case e: Exception =>
+        throw e
+    }
+  }
+
 
   def initUsersToIm(): Future[Seq[OpenimUsersAddResponse]] = {
     userBaseService.collUsersSize("", "0", "", "").flatMap {

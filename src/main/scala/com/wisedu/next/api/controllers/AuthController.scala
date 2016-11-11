@@ -27,19 +27,19 @@ class AuthController extends Controller {
   @Inject var serviceFunctions: ServiceFunctions = _
   @Inject var aliSMSFcServiceFunction: AliSMSFcServiceFunction = _
   @Inject var staticBaseService: StaticBaseService = _
-  @Inject var imUserService:ImUserService =_
-  @Inject var campusService:CampusService =_
+  @Inject var imUserService: ImUserService = _
+  @Inject var campusService: CampusService = _
 
   // 用户信息更新
   filter[UserFilters].put("/v2/users/update") { request: PutUserInfoRequest =>
-    usersService.userInfoUpdate(request).map{
+    usersService.userInfoUpdate(request).map {
       resp => response.ok.json(resp)
     }
   }
 
   // 用户信息查询
   get("/v2/users/:user_id") { request: GetUserInfoRequest =>
-    usersService.userInfoSearch(request).map{
+    usersService.userInfoSearch(request).map {
       resp => response.ok.header("Access-Control-Allow-Origin", "*").json(resp)
     }
   }
@@ -68,14 +68,14 @@ class AuthController extends Controller {
 
   // 取消绑定社交账号
   put("/v2/users/:user_id/unbind/sns") { request: PutUserUnBindSnsRequest =>
-    usersService.unBindUserSns(request).map{
+    usersService.unBindUserSns(request).map {
       resp => response.ok.json(resp)
     }
   }
 
   // 用户注册发送短信验证码 / 修改密码
   post("/v2/users/register/send/msg") { request: PostUserRegSendMsgRequest =>
-    aliSMSFcServiceFunction.sendRegSms(request.phone.phone_no,request.method)
+    aliSMSFcServiceFunction.sendRegSms(request.phone.phone_no, request.method)
   }
 
 
@@ -93,10 +93,10 @@ class AuthController extends Controller {
 
   // 社交网络登陆认证
   post("/v2/auth/tokens") { request: PostAuthTokensRequest =>
-    usersService.postUserSnsAuth(request).map{
-      resp => if(resp.status.equals("success")){
+    usersService.postUserSnsAuth(request).map {
+      resp => if (resp.status.equals("success")) {
         response.ok.json(resp)
-      }else{
+      } else {
         response.badRequest.json(resp)
       }
 
@@ -115,7 +115,7 @@ class AuthController extends Controller {
 
   // 绑定社交账号
   put("/v2/users/:user_id/bind/sns") { request: PutUserBindSnsRequest =>
-    usersService.bindUserSns(request).map{
+    usersService.bindUserSns(request).map {
       resp => response.ok.json(resp)
     }
   }
@@ -124,7 +124,7 @@ class AuthController extends Controller {
 
   // 验证手机唯一
   post("/v2/users/validity/phone") { request: PostUsersPhoneValidityRequest =>
-    serviceFunctions.verifyPhone(request.validity.phone_no,request.validity.user_id.getOrElse("")).map {
+    serviceFunctions.verifyPhone(request.validity.phone_no, request.validity.user_id.getOrElse("")).map {
       verifyInfo =>
         if (verifyInfo)
           GetUsersValidityResponse(GetValidityResp("success"))
@@ -135,7 +135,7 @@ class AuthController extends Controller {
 
   // 验证昵称唯一
   post("/v2/users/validity/alias") { request: PostUsersAliasValidityRequest =>
-    serviceFunctions.verifyName(request.validity.alias,request.validity.user_id.getOrElse("")).map {
+    serviceFunctions.verifyName(request.validity.alias, request.validity.user_id.getOrElse("")).map {
       verifyInfo =>
         if (verifyInfo)
           GetUsersValidityResponse(GetValidityResp("success"))
@@ -149,18 +149,18 @@ class AuthController extends Controller {
       case Some(user) =>
         staticBaseService.putBucket(path).flatMap {
           rst => if (rst) {
-          staticBaseService.putObject(path, BaseFunctions.getRandomString(5, file.filename.getOrElse("wuming")), file.data).flatMap {
-              filePath =>{
+            staticBaseService.putObject(path, BaseFunctions.getRandomString(5, file.filename.getOrElse("wuming")), file.data).flatMap {
+              filePath => {
                 val mImgF = staticBaseService.compressionUpdateImgs(filePath, 300, 300, "m")
                 val lImgF = staticBaseService.compressionUpdateImgs(filePath, 400, 400, "l")
                 val sImgF = staticBaseService.compressionUpdateImgs(filePath, 80, 80, "s")
-                val ys = for{
+                val ys = for {
                   mImg <- mImgF
                   lImg <- lImgF
                   sImg <- sImgF
-                }yield(mImg,lImg,sImg)
-                ys.flatMap{
-                  case (mImg,lImg,sImg) =>
+                } yield (mImg, lImg, sImg)
+                ys.flatMap {
+                  case (mImg, lImg, sImg) =>
                     userBaseService.updUserImg(userId, mImg.mkString(",")).map {
                       result =>
                         imUserService.updImUsers(Seq(user.copy(imgUrl = mImg.mkString(","))))
@@ -200,54 +200,63 @@ class AuthController extends Controller {
   }
 
 
+  //添加一个用户到IM
+  post("/v2/user/add/im") { request: Request =>
+    usersService.addUsersToIm(request.getParam("userIds")).map {
+      rsp => response.ok.json(rsp)
+    }
+  }
 
   //初始化用户到IM
   post("/v2/user/init/im") { request: Request =>
-    usersService.initUsersToIm().map{
+    usersService.initUsersToIm().map {
       rsp => response.ok.json(rsp)
     }
   }
 
   //更新用户到IM
   post("/v2/user/upd/im") { request: Request =>
-    usersService.updUsersToIm().map{
+    usersService.updUsersToIm().map {
       rsp => response.ok.json(rsp)
     }
   }
 
   //删除用户到IM
   post("/v2/user/del/im") { request: Request =>
-    usersService.delUsersToIm().map{
+    usersService.delUsersToIm().map {
       rsp => response.ok.json(rsp)
     }
   }
 
   // 获取用户IDS信息
-  post("/v2/user/getIDS"){ request: PostIdsRegRequest =>
-    campusService.getNjxzUserInfoByToken(request.token).map{
+  post("/v2/user/getIDS") { request: PostIdsRegRequest =>
+    campusService.getNjxzUserInfoByToken(request.token).map {
       rsp => response.ok.json(rsp)
     }
   }
 
   // 获取阿里百川用户
-  get("/v2/user/getIm"){ request: Request =>
-    imUserService.getImgUsers(request.getParam("userId")).map{
+  get("/v2/user/getIm") { request: Request =>
+    imUserService.getImgUsers(request.getParam("userId")).map {
       rsp => response.ok.json(rsp)
     }
   }
 
   // 查询聊天记录
-  get("/v2/user/getImChatLog"){ request: Request =>
-    imUserService.getImgUsersChatLogs(request.getParam("userId1"),request.getParam("userId2")).map{
+  get("/v2/user/getImChatLog") { request: Request =>
+    imUserService.getImgUsersChatLogs(request.getParam("userId1"), request.getParam("userId2")).map {
       rsp => response.ok.json(rsp)
     }
   }
 
   // 群发消息给用户
-  post("/v2/user/pushMsg"){ request: PushMsgRequest =>
-    usersService.sendMsgToIm(request.from, request.content).map{
+  post("/v2/user/pushMsg") { request: PushMsgRequest =>
+    usersService.sendMsgToIm(request.from, request.content).map {
       rsp => response.ok.json(rsp)
     }
+    /*imUserService.pushMsgToUsers(request.from,Seq("c0d68e38-e706-4c14-9f2c-0c594aac0d60"),request.content).map{
+      rsp => response.ok.json(rsp)
+    }*/
   }
 
 }
