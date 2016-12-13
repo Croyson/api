@@ -13,7 +13,8 @@ import com.twitter.finatra.request._
  */
 
 case class PostMsgReq(feed_id: Option[String], p_msg_id: Option[String], content: String, msg_img: Option[String],
-                      update_type: Int, thresh_hold: Option[Int], group_id: Option[String],reply_msg_id:Option[UUID])
+                      update_type: Int, thresh_hold: Option[Int], group_id: Option[String],reply_msg_id:Option[UUID],
+                       linkTitle: Option[String], linkImg: Option[String], linkUrl: Option[String])
 
 case class PostMsgRequest(@RequestInject request: Request, method: String, is_anonymous: Int, msg: PostMsgReq)
 

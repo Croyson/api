@@ -498,9 +498,10 @@ class UsersService {
       userSize =>
         var sendMsgsF = Seq[Future[OpenimImmsgPushResponse]]()
         for (i <- 0 to userSize / 100) {
-          val sendMsgF = userBaseService.collUsers("", "0", "", "", 100, i * 100).flatMap(
-            users =>
+          val sendMsgF = userBaseService.collUsers("", "0", "", "", 100, i * 100).map(
+            users => {
               imUserService.pushMsgToUsers(from, users.map(_.userId.toString), content)
+            }
           )
           sendMsgsF = sendMsgsF :+ sendMsgF
         }

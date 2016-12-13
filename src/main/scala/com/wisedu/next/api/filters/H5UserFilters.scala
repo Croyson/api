@@ -160,7 +160,9 @@ class H5UserFilters extends SimpleFilter[Request, Response] {
       majors, dorm, degree, fresh_date, birth_date, home, loveStatus, sign, interests, actives,
       DateTime.now, UUID.randomUUID().toString, deviceId, anonymous, 1, backgroundImg, "", userRole))
     }.rescue {
-      case e: Exception => Future { None }
+      case e: Exception =>
+        e.printStackTrace()
+        Future { None }
     }
   }
 

@@ -271,7 +271,8 @@ class MsgService extends Logging {
         val img = if (msg.updateType == 3 && msg.likeNum < msg.threshHold) msg.fuzzyImgs else msg.imgUrls
         GetCircleMsgsResp(msg.messageId.toString, s"/v2/msgs/${msg.messageId.toString}", msg.content,
           circle._1, msg.groupId, circle._2, img.split(",").filter(_.trim.nonEmpty).mkString(","), msg.messageType.toString, msg.cTime, msg.updateNum, msg.likeNum, isLike, isEmotion, msg.isAnonymous,
-          msg.updateType, msg.threshHold, referMsgInfo, emotions, msgPostUser, hotUpdates, isTop, isAttention, msg.isRecommend, msg.isDelete)
+          msg.updateType, msg.threshHold, referMsgInfo, emotions, msgPostUser, hotUpdates, isTop, isAttention, msg.isRecommend, msg.isDelete,
+          msg.linkTitle, msg.linkImg, msg.linkUrl)
     }
   }
 
@@ -412,7 +413,8 @@ class MsgService extends Logging {
             msg.content, img, userId, userInfo, msg.isAnonymous,
             if (isRealNamePost == 1 && name.nonEmpty) name else userAlias, name, freshDate,
             msg.updateType, msg.threshHold, msg.replyMsgId, msg.replyUserId,
-            if (isRealNamePost == 1 && rUserName.nonEmpty) rUserName else rUserAlias)
+            if (isRealNamePost == 1 && rUserName.nonEmpty) rUserName else rUserAlias,
+            msg.linkTitle, msg.linkImg, msg.linkUrl)
         }
 
     }
@@ -534,7 +536,7 @@ class MsgService extends Logging {
 
     val isAnonymous = request.is_anonymous
 
-    val imgUrls =  request.msg.msg_img.getOrElse("").split(",").filter(_.trim.nonEmpty).mkString(",")
+    val imgUrls = request.msg.msg_img.getOrElse("").split(",").filter(_.trim.nonEmpty).mkString(",")
 
     // 图片模糊处理,当评论模式为点赞公开时
     val fuzzyImgsF = if (updateType == 3 && imgUrls.nonEmpty) staticBaseService.fuzzyUpdateImgs(imgUrls).map {
@@ -577,13 +579,16 @@ class MsgService extends Logging {
     }
 
     val content = request.msg.content.replaceAll("</?[^>]+>", "")
-
+    val linkTitle = request.msg.linkTitle.getOrElse("")
+    val linkImg = request.msg.linkTitle.getOrElse("")
+    val linkUrl = request.msg.linkTitle.getOrElse("")
     for {
       fuzzyImgs <- fuzzyImgsF
       groupId <- groupIdF
       replyMsg <- replyMsgF
     } yield MessageInfo(UUID.randomUUID(), feedId, messageType, content, DateTime.now, cUserId.toString, 0, 0, 0, 0, 0, 0, 0, 0, updateType,
-      threshHold, isAnonymous, imgUrls, fuzzyImgs, updateLevel, 0, groupId, mImgs, 0, 0, replyMsg._1.toString, replyMsg._2)
+      threshHold, isAnonymous, imgUrls, fuzzyImgs, updateLevel, 0, groupId, mImgs, 0, 0, replyMsg._1.toString, replyMsg._2,
+      linkTitle, linkImg, linkUrl)
 
   }
 
@@ -661,8 +666,8 @@ class MsgService extends Logging {
             (for {
               newNotices <- msgBaseService.getUserNotice(userId.toString, time)
               allNotices <- msgBaseService.getUserNotice(userId.toString, time.plusMonths(-6))
-            }yield(newNotices,allNotices)).flatMap{
-              case (newNotices,allNotices)=>Future.collect(allNotices.sortWith(serviceFunctions.comp_UserMsgNoticeOption_desc).map {
+            } yield (newNotices, allNotices)).flatMap {
+              case (newNotices, allNotices) => Future.collect(allNotices.sortWith(serviceFunctions.comp_UserMsgNoticeOption_desc).map {
                 notice =>
                   circlesBaseService.getCircleByMsgId(notice.msgId.toString).flatMap {
                     case Some(circle) => Future(circle.isRealNamePost)

@@ -45,15 +45,15 @@ class UpdatesService {
         val pstImg = if ("6".equals(feed.viewStyle) && "0".equals(method)) {
           //话题的一级评论即原创
           PostMsgRequest(request.request, "1", is_anonymous, PostMsgReq(Some(feed_id.toString), None, content, Some(img_urls),
-            update_type, Some(thresh_hold), None, None))
+            update_type, Some(thresh_hold), None, None, None, None, None))
         } else if (!"6".equals(feed.viewStyle) && "0".equals(method)) {
           //非话题的评论 一级评论
           PostMsgRequest(request.request, "1", is_anonymous, PostMsgReq(Some(feed_id.toString), None, content, Some(img_urls),
-            update_type, Some(thresh_hold), None, None))
+            update_type, Some(thresh_hold), None, None, None, None, None))
         } else {
           //二级评论
           PostMsgRequest(request.request, "1", is_anonymous, PostMsgReq(None, Some(pupdate_id), content, Some(img_urls),
-            update_type, Some(thresh_hold), None, None))
+            update_type, Some(thresh_hold), None, None, None, None, None))
         }
         msgService.postMsg(pstImg).map {
           rsp => if ("success".equals(rsp.status)) {

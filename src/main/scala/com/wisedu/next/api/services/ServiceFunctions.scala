@@ -636,7 +636,8 @@ class ServiceFunctions {
     val img = if (msg.updateType == 3 && msg.likeNum < msg.threshHold) msg.fuzzyImgs else msg.imgUrls
     GetMsgInfoResponse("success", "", Some(GetMsgInfoResp(msg.messageId.toString, msg.content, img, msg.cTime,
       circleName, group_id,circleIcon, msg.likeNum, msg.unLikeNum, msg.updateNum, msg.messageType.toString, isLike, isEmotion, referMsgInfo, msgPostUser,
-      emotions, likeUser, msg.updateType, msg.threshHold, msg.isAnonymous,isAttention,msg.isRecommend,adminUser,msg.isDelete)))
+      emotions, likeUser, msg.updateType, msg.threshHold, msg.isAnonymous,isAttention,msg.isRecommend,adminUser,msg.isDelete,
+      msg.linkTitle, msg.linkImg, msg.linkUrl)))
 
   }
   case class Location(city: String, state: String)

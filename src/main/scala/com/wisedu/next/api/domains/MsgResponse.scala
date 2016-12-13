@@ -18,7 +18,8 @@ case class GetReferMsgResp(msg_id: String, msg_url: String, content: String, msg
 case class GetMsgInfoResp(msg_id: String, content: String, msg_img: String, c_time: DateTime, msg_circle: String, group_id:String,circle_iconUrl:String,
                           like_num: Long, unlike_num: Long, update_num:Long, msg_type: String, is_like: String, is_emotion: String, referenced_msg: GetReferMsgResp,
                           user: GetMsgPosterResp, emotions: Seq[GetEmotionsResp], like_users: Seq[GetEmotionsUserResp],
-                          update_type: Int, thresh_hold: Int, is_anonymous: Int,is_attention:Int,is_recommend:Int,adminUser:String,is_delete:Int)
+                          update_type: Int, thresh_hold: Int, is_anonymous: Int,is_attention:Int,is_recommend:Int,adminUser:String,is_delete:Int,
+                          linkTitle: String, linkImg: String, linkUrl: String)
 
 case class GetMsgInfoExpressResp(msg_id: String,like_num: Long, unlike_num: Long, emotions: Seq[GetEmotionsResp],
                                  like_users: Seq[GetEmotionsUserResp])
@@ -32,12 +33,14 @@ case class GetMsgEmotionsResp(model_id: String, select_id:String, select_img: St
 case class GetMsgHotUpdatesResp(update_id: String, update_content: String, update_img: String, user_id: String,
                                 user_url: String, is_anonymous: Int, user_name: String,user_real_name: String,
                                 user_fresh_year:String, update_type: Int, thresh_hold: Int,
-                                reply_msg_id:String,reply_user_id:String,reply_user_name:String)
+                                reply_msg_id:String,reply_user_id:String,reply_user_name:String,
+                                linkTitle: String, linkImg: String, linkUrl: String)
 
 case class GetCircleMsgsResp(msg_id: String, msg_url: String, content: String, msg_circle: String, group_id:String,circle_iconUrl:String, msg_img: String,
                              msg_type: String, c_time: DateTime, update_num: Long, like_num: Long, is_like: String, is_emotion: String,
                              is_anonymous: Int, update_type: Int, thresh_hold: Int, referenced_msg: GetReferMsgResp, emotions: Seq[GetMsgEmotionsResp],
-                             user: GetMsgPosterResp, updates: Seq[GetMsgHotUpdatesResp],is_top:Int,is_attention:Int,is_recommend:Int,is_delete:Int)
+                             user: GetMsgPosterResp, updates: Seq[GetMsgHotUpdatesResp],is_top:Int,is_attention:Int,is_recommend:Int,is_delete:Int,
+                             linkTitle: String, linkImg: String, linkUrl: String)
 
 
 case class GetCircleMsgsResponse(status: String, errMsg:String, msg_list:Seq[GetCircleMsgsResp])

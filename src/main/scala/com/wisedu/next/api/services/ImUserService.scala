@@ -37,8 +37,8 @@ import scala.collection.JavaConversions._
 class ImUserService extends Logging {
   @Inject var objectMapper: FinatraObjectMapper = _
   private val futurePool = FuturePools.unboundedPool("CallbackConverter")
-  val appKey = "23485801"
-  val appSecret = "e3dce60c815dde754780968b8e0d7d59"
+  val appKey = "23514495"
+  val appSecret = "2682707f39df7c5cf2200a5b66b2fd42"
   val imUrl = "http://gw.api.taobao.com/router/rest"
   val client = new DefaultTaobaoClient(imUrl, appKey, appSecret)
 
@@ -71,7 +71,7 @@ class ImUserService extends Logging {
       }
       req.setUserinfos(imUsers)
       val resp = client.execute(req)
-      Thread.sleep(500)
+      Thread.sleep(2000)
       info("IM账号添加,请求参数:" + objectMapper.writePrettyString(imUsers) + ",返回参数:" + objectMapper.writePrettyString(resp))
       resp
     }
@@ -114,7 +114,7 @@ class ImUserService extends Logging {
       }
       req.setUserinfos(imUsers)
       val resp = client.execute(req)
-      Thread.sleep(500)
+      Thread.sleep(2000)
       info("IM账号更新,请求参数:" + objectMapper.writePrettyString(imUsers) + ",返回参数:" + objectMapper.writePrettyString(resp))
       resp
     }
@@ -176,8 +176,7 @@ class ImUserService extends Logging {
   }
 
   // 服务端推送消息,群发
-  def pushMsgToUsers(from: String, to: Seq[String], content: String): Future[OpenimImmsgPushResponse] = {
-    futurePool {
+  def pushMsgToUsers(from: String, to: Seq[String], content: String): OpenimImmsgPushResponse = {
       val req = new OpenimImmsgPushRequest
       val imMsg = new ImMsg
       imMsg.setFromUser(from)
@@ -186,8 +185,8 @@ class ImUserService extends Logging {
       imMsg.setMsgType(0L)
       req.setImmsg(imMsg)
       val resp = client.execute(req)
+      info("IM消息推送 " + from + ",返回参数:" + objectMapper.writePrettyString(resp))
       resp
-    }
   }
 }
 
