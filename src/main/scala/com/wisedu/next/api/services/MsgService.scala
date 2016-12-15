@@ -580,8 +580,8 @@ class MsgService extends Logging {
 
     val content = request.msg.content.replaceAll("</?[^>]+>", "")
     val linkTitle = request.msg.linkTitle.getOrElse("")
-    val linkImg = request.msg.linkTitle.getOrElse("")
-    val linkUrl = request.msg.linkTitle.getOrElse("")
+    val linkImg = request.msg.linkImg.getOrElse("")
+    val linkUrl = request.msg.linkUrl.getOrElse("")
     for {
       fuzzyImgs <- fuzzyImgsF
       groupId <- groupIdF
