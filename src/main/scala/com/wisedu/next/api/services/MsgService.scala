@@ -6,7 +6,6 @@ import javax.inject.Inject
 import com.google.inject.Singleton
 import com.twitter.inject.Logging
 import com.twitter.util.Future
-import com.wisedu.next.admin.services.JPushService
 import com.wisedu.next.api.domains._
 import com.wisedu.next.api.filters.UserContext._
 import com.wisedu.next.models.{MessageInfo, MsgRelation}
