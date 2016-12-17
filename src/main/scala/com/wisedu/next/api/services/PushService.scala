@@ -25,14 +25,14 @@ class PushService {
     Future {
       val customMap = new java.util.HashMap[String, Object]()
       customMap.put("newFeed", "1")
-       val mess: Message = new Message()
-       mess.setCustom(customMap)
-       mess.setType(Message.TYPE_MESSAGE)
-       mess.setExpireTime(86400)
+      val mess = new com.tencent.xinge.Message()
+      mess.setCustom(customMap)
+      mess.setType(Message.TYPE_MESSAGE)
+      mess.setExpireTime(86400)
       // push.pushTags(0, tags.asJava, "OR", mess)
 
 
-      val messIOS: MessageIOS = new MessageIOS()
+      val messIOS: MessageIOS = new com.tencent.xinge.MessageIOS()
       messIOS.setExpireTime(86400)
       messIOS.setType(MessageIOS.TYPE_REMOTE_NOTIFICATION)
       messIOS.setCustom(customMap)

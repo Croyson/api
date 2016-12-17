@@ -7,7 +7,6 @@ import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import com.twitter.finatra.utils.FuturePools
 import com.twitter.util.Future
-import com.wisedu.next.admin.services.JPushService
 import com.wisedu.next.api.domains._
 import com.wisedu.next.api.filters.H5UserContext._
 import com.wisedu.next.api.filters.H5UserFilters
@@ -34,7 +33,6 @@ class H5Controller extends Controller {
   @Inject var sysCodeBaseService: SysCodeBaseService = _
   @Inject var mediaBaseService: ServiceBaseService = _
   @Inject var updatesService: UpdatesService = _
-  @Inject var pushService: JPushService = _
 
   val defaultUserId = UUID.fromString("b41c7fab-2087-11e6-b36d-acbc327c3dc9")
 
@@ -372,12 +370,6 @@ class H5Controller extends Controller {
 
   }
 
-  //获取评论详情
-  get("/v2/h5/push") { request: Request =>
-    pushService.pushDeviceMessageByTags(Seq("student")).map {
-      resp => response.ok.header("Access-Control-Allow-Origin", "*").json(resp)
-    }
-  }
 
 }
 
