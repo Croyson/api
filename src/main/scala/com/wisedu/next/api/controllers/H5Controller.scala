@@ -7,6 +7,7 @@ import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import com.twitter.finatra.utils.FuturePools
 import com.twitter.util.Future
+import com.wisedu.next.admin.services.JPushService
 import com.wisedu.next.api.domains._
 import com.wisedu.next.api.filters.H5UserContext._
 import com.wisedu.next.api.filters.H5UserFilters
@@ -33,6 +34,7 @@ class H5Controller extends Controller {
   @Inject var sysCodeBaseService: SysCodeBaseService = _
   @Inject var mediaBaseService: ServiceBaseService = _
   @Inject var updatesService: UpdatesService = _
+  @Inject var pushService: JPushService = _
 
   val defaultUserId = UUID.fromString("b41c7fab-2087-11e6-b36d-acbc327c3dc9")
 
@@ -363,11 +365,18 @@ class H5Controller extends Controller {
 
 
   options("/v2/:*") { request: Request =>
-    val domain = request.headerMap.getOrElse("Origin","")
-    response.accepted.headers(Map("Access-Control-Allow-Origin"-> domain,
-      "Access-Control-Allow-Credentials" ->"true","Access-Control-Allow-Methods"-> "POST,GET,OPTIONS,DELETE",
-      "Access-Control-Allow-Headers"-> "Origin, X-Requested-With,accept, authorization,Content-Type,sessionToken,tenantId"))
+    val domain = request.headerMap.getOrElse("Origin", "")
+    response.accepted.headers(Map("Access-Control-Allow-Origin" -> domain,
+      "Access-Control-Allow-Credentials" -> "true", "Access-Control-Allow-Methods" -> "POST,GET,OPTIONS,DELETE",
+      "Access-Control-Allow-Headers" -> "Origin, X-Requested-With,accept, authorization,Content-Type,sessionToken,tenantId"))
 
+  }
+
+  //获取评论详情
+  get("/v2/h5/push") { request: Request =>
+    pushService.pushDeviceMessageByTags(Seq("student")).map {
+      resp => response.ok.header("Access-Control-Allow-Origin", "*").json(resp)
+    }
   }
 
 }

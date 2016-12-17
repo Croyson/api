@@ -7,12 +7,12 @@ import com.twitter.finatra.json.modules.FinatraJacksonModule
 import com.twitter.finatra.json.utils.CamelCasePropertyNamingStrategy
 import com.wisedu.next.api.controllers._
 import com.wisedu.next.api.filters.UserFilters
-import com.wisedu.next.modules.{IdxNjxzHttpClientModule, DataBaseModule, ExHttpClientModule, MobileCampusModule}
+import com.wisedu.next.modules._
 
 object NextServerMain extends NextServer
 
 class NextServer extends HttpServer {
-  override val modules = Seq(DataBaseModule, ExHttpClientModule, MobileCampusModule,IdxNjxzHttpClientModule)
+  override val modules = Seq(DataBaseModule, ExHttpClientModule,JPushHttpClientModule, MobileCampusModule,IdxNjxzHttpClientModule)
 
   override def jacksonModule = CustomJacksonModule
 

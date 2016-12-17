@@ -6,6 +6,7 @@ import javax.inject.Inject
 import com.google.inject.Singleton
 import com.twitter.inject.Logging
 import com.twitter.util.Future
+import com.wisedu.next.admin.services.JPushService
 import com.wisedu.next.api.domains._
 import com.wisedu.next.api.filters.UserContext._
 import com.wisedu.next.models.{MessageInfo, MsgRelation}
@@ -34,7 +35,7 @@ class MsgService extends Logging {
   @Inject var staticBaseService: StaticBaseService = _
   @Inject var circlesBaseService: CirclesBaseService = _
   @Inject var circleUserService: CircleUserService = _
-
+  @Inject var pushService: JPushService = _
   //获取消息的情形表达
   def getMsgExpress(request: GetMsgInfoRequest): Future[GetMsgInfoExpressResponse] = {
     msgBaseService.getMsgById(UUID.fromString(request.msg_id)).flatMap {
@@ -508,7 +509,9 @@ class MsgService extends Logging {
         }.flatMap {
           case (rst, errMsg) => if (rst) {
             updateService.toGetMsgUpdatesResp(request.request.user.userId, msg).map {
-              item => PostMsgResponse("success", errMsg, Some(item))
+              item =>
+                pushService.pushDeviceMessageByTags(Seq("student"))
+                PostMsgResponse("success", errMsg, Some(item))
             }
           } else {
             Future(PostMsgResponse("failed", errMsg, None))
